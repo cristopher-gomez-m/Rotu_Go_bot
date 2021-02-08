@@ -1,3 +1,4 @@
+import psycopg2
 import logging
 import os
 import telegram
@@ -33,3 +34,21 @@ despachador = updater.dispatcher
 despachador.add_handler(CommandHandler("start", start))
 updater.start_polling()
 updater.idle() #Permite finaliza el bot con Ctrl + C
+
+
+
+ 
+
+ #Global constant
+ PSQL_HOST="localhost"
+ PSQL_PORT="5432"
+ PSQL_USER="postgres"
+ PSQL_PASS="748596alex"
+ PSQL_DB="Rotu_Go_bot"
+
+ #Connection
+ connection_address="""
+ 
+
+     
+
