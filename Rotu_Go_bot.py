@@ -34,7 +34,7 @@ despachador = updater.dispatcher
 despachador.add_handler(CommandHandler("start", start))
 updater.start_polling()
 updater.idle() #Permite finaliza el bot con Ctrl + C
-
+despachador.add_handler(CommandHandler)
 
 
  

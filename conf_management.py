@@ -13,10 +13,10 @@ def get_telegram_group_id():
 
 def get_connection_by_config():
     postgresql = {
-        "host": os.getenv('POSTGRES_HOST'),
-        "user": os.getenv('POSTGRES_USER'),
-        "password": os.getenv('POSTGRES_PASSWORD'),
-        "database": os.getenv('POSTGRES_DATABASE'),
+        "host": os.getenv('localhost'),
+        "user": os.getenv('postgres'),
+        "password": os.getenv('748596alex'),
+        "database": os.getenv('Rotu_Go_bot'),
         "port": "5432"
     }
     conn = psycopg2.connect(**postgresql)

@@ -1,5 +1,5 @@
-create table Vuelo( 
-    ID_vuelo serial primarial key, 
+create table if not exists vuelo( 
+    ID_vuelo serial primary key, 
     codigo_IATA varchar(3) not null,
     aeropuerto varchar(35) not null,
     lugar_de_ida varchar(35) not null,
