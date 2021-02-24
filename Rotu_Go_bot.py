@@ -27,6 +27,11 @@ def start(update, context):
     logger.info(f"El usuario {update.effective_user['first_name']},ha iniciado una conversación")
     name= update.effective_user['first_name']
     update.message.reply_text(f"Bienvenido {name},Soy Izumi,tu asistente de vuelo")
+    update.message.reply_text(f'''/listar - Lista los vuelos disponibles
+    /SEARCHD Busca los vuelos de acuerdo al destino seleccionado(ciudad,nombre del aeropuerto o código IATA)
+    /SEARCHD Busca los vuelos de acuerdo al origen seleccionado(ciudad,nombre del aeropuerto o código IATA)
+    /BUY_TICKET Reserva un vuelo solo de ida(Ejemplo: /BUY_TICKET Cristopher Gómez Guayaquil 19-03-2021 Quito 19-03-2021)
+     ''')
     photo="https://www.pinterest.es/pin/621567186048088830/"
     bot.send_photo(user_id, photo)
     
@@ -140,7 +145,9 @@ def SEARCHO(update, context):
 #Reservar vuelo solo de ida
 def BUY_TICKET(update, context):
     user_id= update.effective_user['id']
-    logger.info(f"El usuario {user_id},ha solicitado reservar un vuelo")
+    name= update.effective_user['first_name']
+    logger.info(f"El usuario {user_id},ha solicitado comprar un vuelo")
+    texto=update.message.text.replace("/BUY_TICKET ", "")
     conn = psycopg2.connect(
         dbname="Rotu_Go_bot",
         user="postgres",
@@ -148,15 +155,24 @@ def BUY_TICKET(update, context):
         host="localhost",
         port="5432"
     )
+    textito= texto.split()
     cursor=conn.cursor()
     query= '''SELECT id_vuelo FROM public.vuelo WHERE vuelo.lugar_de_origen LIKE %s ESCAPE AND vuelo.fecha_de_ida >= CAST('%s' AS timestamp) AND vuelo.lugar_de_llegada LIKE %s ESCAPE AND vuelo.fecha_de_llegada >= CAST('%s' AS timestamp)''' 
-    cursor.execute(query)
+    cursor.execute("SELECT id_vuelo FROM public.vuelo WHERE vuelo.lugar_de_origen LIKE %s ESCAPE '' AND vuelo.fecha_de_ida >= CAST(%s AS timestamp) AND vuelo.lugar_de_llegada LIKE %s ESCAPE '' AND vuelo.fecha_de_llegada >= CAST(%s AS timestamp)",(textito[2],textito[3],textito[4],textito[5],))
     row= cursor.fetchall()
-    for x in row:
-        context.bot.sendMessage(chat_id=user_id,parse_mode="HTML", text=f"Vuelo:\naeropueto:{x[0]},codigoIATA:{x[1]},Lugar de partida:{x[2]},Destino:{x[3]},Fecha y hora de partida:{x[4]},Fecha y hora de llegada:{x[5]}")
-
-    conn.commit()
-    conn.close()
+    try:
+        for x in row:
+            row2=cursor.fetchall()
+            cursor.execute("INSERT INTO public.cliente (ip_telegram, fist_name, id_vuelo) VALUES (%s, %s, %s)",(user_id,textito[1] ,x))
+            update.message.reply_text(f" {name},Gracias por comprar el vuelo {x} <3")   
+            photo="https://www.pinterest.com/pin/653162752196322125/"
+            bot.send_photo(user_id, photo)
+            conn.commit()
+            conn.close()
+    except (psycopg2.errors.UniqueViolation):
+        update.message.reply_text(f" {name},Ya compraste ese vuelo")  
+        photo="https://www.pinterest.es/pin/177470041554056898/"
+        bot.send_photo(user_id, photo)
 
 def BUYRT_TICKET(update, context):
     user_id= update.effective_user['id']
