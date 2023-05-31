@@ -9,3 +9,4 @@
     fecha_de_ida timestamp not null,
     fecha_de_llegada timestamp not null 
 );
+-- comentario de prueba
